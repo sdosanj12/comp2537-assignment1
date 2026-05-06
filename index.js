@@ -28,6 +28,7 @@ async function connectDB() {
   console.log('Connected to MongoDB');
 }
 
+app.set('trust proxy', 1);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
@@ -41,7 +42,11 @@ app.use(session({
     collectionName: 'sessions',
     crypto: { secret: process.env.MONGODB_SESSION_SECRET }
   }),
-  cookie: { maxAge: 60 * 60 * 1000 }
+  cookie: { 
+  maxAge: 60 * 60 * 1000,
+  secure: true,
+  sameSite: 'none'
+}
 }));
 
 function requireLogin(req, res, next) {

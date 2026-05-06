@@ -4,7 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +15,13 @@ const mongoUri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGOD
 let userCollection;
 
 async function connectDB() {
-  const client = new MongoClient(mongoUri);
+  const client = new MongoClient(mongoUri, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    }
+  });
   await client.connect();
   const db = client.db(process.env.MONGODB_DATABASE);
   userCollection = db.collection('users');
@@ -148,7 +154,6 @@ app.get('*', (req, res) => {
   </body></html>`);
 });
 
-// Server only starts AFTER MongoDB is connected
 connectDB()
   .then(() => {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

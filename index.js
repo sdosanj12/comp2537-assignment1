@@ -97,7 +97,9 @@ app.post('/signupSubmit', async (req, res) => {
   await userCollection.insertOne({ name, email, password: hashedPassword });
 
   req.session.user = { name, email };
+  req.session.save(() => {
   res.redirect('/members');
+});
 });
 
 app.get('/login', (req, res) => {
@@ -129,7 +131,9 @@ app.post('/loginSubmit', async (req, res) => {
   if (!passwordMatch) return res.send(`<p>Invalid email/password combination.</p><a href="/login">Try again</a>`);
 
   req.session.user = { name: user.name, email: user.email };
+  req.session.save(() => {
   res.redirect('/members');
+});
 });
 
 app.get('/members', requireLogin, (req, res) => {
